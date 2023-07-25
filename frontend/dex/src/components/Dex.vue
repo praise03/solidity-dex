@@ -22,12 +22,14 @@
 			v-model="inputAmount"
             />
 
-            <button class="flex bg-gray-200 rounded-md px-4 py-1 uppercase" > <img v-if="token == 'eth'" class="-ml-2 mr-2" src="eth.svg" width="15" height="10" alt="" srcset=""> <img v-if="token == 'zro'" src="coin.svg" class="mt-[1.9px] mr-1 -ml-2" alt="" width="20" height="15">  {{token}}</button>
+            <button class="flex bg-gray-200 rounded-md px-4 py-1 uppercase" > <img v-if="token == 'eth'" class="-ml-2 mr-2" src="/eth.svg" width="15" height="10" alt="" srcset=""> <img v-if="token == 'zro'" src="/coin.svg" class="mt-[1.9px] mr-1 -ml-2" alt="" width="20" height="15">  {{token}}</button>
           </div>
         </div>
       </div>
+	  
 
-      <button @click="switchPair" class="p-1 ml-[50%] rounded-sm text-2xl my-8 text-white"> <img src="swap.svg" width="20" height="20"  alt=""> </button>
+
+      <button @click="switchPair" class="p-1 ml-[50%] rounded-sm text-2xl my-8 text-white"> <img src="/swap.svg" width="20" height="20"  alt=""> </button>
 
         <div class="">
             <span class="font-thin">Buy</span>
@@ -48,7 +50,7 @@
                 class="mr-24 focus:outline-none w-3/4 " 
 				v-model="output"
                 />
-                <button class="flex bg-gray-200 rounded-md px-4 py-1 uppercase" > <img v-if="token == 'zro'" class="-ml-2 mr-2" src="eth.svg" width="15" height="12" alt="" srcset=""> <img v-if="token == 'eth'" src="coin.svg" class="mt-[1.9px] mr-1 -ml-2" alt="" width="20" height="15">
+                <button class="flex bg-gray-200 rounded-md px-4 py-1 uppercase" > <img v-if="token == 'zro'" class="-ml-2 mr-2" src="/eth.svg" width="15" height="12" alt="" srcset=""> <img v-if="token == 'eth'" src="/coin.svg" class="mt-[1.9px] mr-1 -ml-2" alt="" width="20" height="15">
                  {{token == 'zro' ? 'eth' : 'zro'}}</button>
         
 
@@ -71,7 +73,6 @@ import { Zero } from "../../../../types/contracts/Zero"
 import { ethers } from "ethers";
 import { useToast } from "vue-toastification";
 import constants from '../constants'
-import { parse } from 'dotenv';
 
 
 const toast = useToast()
@@ -132,7 +133,7 @@ const loadZEROContract = async () => {
 		);
   }
   
-  console.log("Dex ZRO balance: " + ( Number((await ZERO_Contract.balanceOf(DEX.address)).toString() ) ))
+  console.log("Dex ZRO balance: " + ( BigInt(((await ZERO_Contract.balanceOf(DEX.address))).toString() ) ))
   console.log( "Dex ETH balance: " + (ethers.utils.formatEther(await provider.getBalance(DEX.address))))
   
 }
@@ -152,18 +153,19 @@ const getOutputAmount = async() => {
 		return;
 	}
 	if (token.value == 'zro') {
-		const parsedInput = toDecimals((inputAmount.value))
-		const inputReserve = String(Number(await ZERO_Contract.balanceOf(DEX.address)));
-		// console.log(inputReserve)
+		const parsedInput = BigInt(Number(toDecimals(inputAmount.value))).toString();
+		const inputReserve = Number(await ZERO_Contract.balanceOf(DEX.address));
+		const parsedInputReserve =  BigInt(Number((inputReserve))).toString();
+		
 		const outputReserve = await provider.getBalance(DEX.address)
-		const outputAmount = await DEX.forecastOutputAmountfromSwap(parsedInput, inputReserve, outputReserve)
-		output.value = ethers.utils.formatEther(outputAmount)	
+		const outputAmount = await DEX.forecastOutputAmountfromSwap(parsedInput, parsedInputReserve, outputReserve)
+		output.value = ethers.utils.formatEther(outputAmount)
 	}
 	else{
 		const parsedInput = ethers.utils.parseEther(inputAmount.value.toString())
 		const inputReserve = await provider.getBalance(DEX.address);
 		// console.log(parsedInput)
-		const outputReserve = String(Number(await ZERO_Contract.balanceOf(DEX.address)));
+		const outputReserve = BigInt(Number(await ZERO_Contract.balanceOf(DEX.address))).toString();
 		const outputAmount = await DEX.forecastOutputAmountfromSwap(parsedInput, inputReserve, outputReserve)
 		output.value = String(fromDecimals(outputAmount.toString()))
 	}
@@ -175,7 +177,7 @@ const swapTokens = async() => {
 		return;
 	}
 	if (token.value == "zro") {
-		const parsedInput = toDecimals(inputAmount.value)
+		const parsedInput = BigInt(Number(toDecimals(inputAmount.value))).toString();
 		// console.log(parsedInput)
 		const tx = await DEX.swapZROtoETH(parsedInput)
 		await tx.wait(1)	
@@ -186,7 +188,7 @@ const swapTokens = async() => {
 		await tx.wait(1)
 	}
 	toast.success('Swap Successful');
-	console.log("Dex ZRO balance after swap: " + ( Number((await ZERO_Contract.balanceOf(DEX.address)).toString() ) ))
+	console.log("Dex ZRO balance after swap: " + ( BigInt(((await ZERO_Contract.balanceOf(DEX.address))).toString() ) ))
  	console.log( "Dex ETH balance after swap: " + (ethers.utils.formatEther(await provider.getBalance(DEX.address))))
 	inputAmount.value = 0
 	output.value = "";

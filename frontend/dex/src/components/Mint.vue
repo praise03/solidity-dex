@@ -43,7 +43,7 @@ const toast = useToast();
 const currentAccount = ref("");
 const amount = ref(0);
 let ZERO_Contract: Zero;
-let provider = null;
+let provider;
 
 const loadCurrentAccount = async () => {
   if (typeof window.ethereum !== "undefined") {

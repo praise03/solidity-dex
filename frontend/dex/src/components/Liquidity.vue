@@ -10,7 +10,7 @@
         <div class="mt-2 px-4 py-2 border  flex flex-col">
           <!-- <span class="font-thin">-$</span> -->
           <div class="flex p-3 ml-auto">
-          <button class="items-center flex mr-16 bg-gray-200 rounded-md px-4 py-1 uppercase" > <img src="coin.svg" class="mt-[1.9px] mr-1 -ml-2" alt="" width="20" height="15">ZRO</button>
+          <button class="items-center flex mr-16 bg-gray-200 rounded-md px-4 py-1 uppercase" > <img src="/coin.svg" class="mt-[1.9px] mr-1 -ml-2" alt="" width="20" height="15">ZRO</button>
 			<div class="flex bg-gray-200 py-1 px-2">
 		  <input 
             autocomplete="off"
@@ -33,13 +33,13 @@
         </div>
 
 		<span class="">
-			<img src="plus.svg" class="" width="40" height="40" alt="">
+			<img src="/plus.svg" class="" width="40" height="40" alt="">
 		</span>		
 
 		<div class="px-4 py-2 border  flex flex-col">
           <!-- <span class="font-thin">-$</span> -->
           <div class="flex p-3 ml-auto">
-          <button class="items-center flex mr-16 bg-gray-200 rounded-md px-4 py-1  uppercase" > <img src="eth.svg" class="mr-2 -ml-1 mt-1 " alt="" width="15" height="10">ETH</button>
+          <button class="items-center flex mr-16 bg-gray-200 rounded-md px-4 py-1  uppercase" > <img src="/eth.svg" class="mr-2 -ml-1 mt-1 " alt="" width="15" height="10">ETH</button>
 			<div class="flex bg-gray-200 py-1 px-2">
 		  <input 
             autocomplete="off"
@@ -94,13 +94,13 @@
           </div>
 
 		  <span class="">
-			<img src="plus.svg" class="" width="40" height="40" alt="">
+			<img src="/plus.svg" class="" width="40" height="40" alt="">
 		</span>	
 
 		<div class=" w-full bg-gray-200 flex p-3 mt-1 ml-auto">
           <button class="flex mr-16 px-2 self-center font-semibold  capitalize" >You will recieve</button>
 			<div class="bg-gray-300 flex py-1 px-2">
-				<img src="coin.svg" class="mr-2 -ml-1 mt-1 " alt="" width="15" height="10">
+				<img src="/coin.svg" class="mr-2 -ml-1 mt-1 " alt="" width="15" height="10">
 		  <input 
             autocomplete="off"
             autocorrect="off"
@@ -117,7 +117,7 @@
 			</div>
 
 			<div class="bg-gray-300 ml-5 flex py-1 px-2">
-				<img src="eth.svg" class="mr-2 -ml-1 mt-1 " alt="" width="15" height="10">
+				<img src="/eth.svg" class="mr-2 -ml-1 mt-1 " alt="" width="15" height="10">
 		  <input 
             autocomplete="off"
             autocorrect="off"
@@ -279,9 +279,9 @@ const addLiquidity = async(ethAmount: number, zroAmount : number) => {
 
 	const parsedZroAmount =  BigInt(Number(toDecimals(zroAmount))).toString();
 
-	const ethSent = ethers.utils.parseUnits(parsedZroAmount,"ether");
+	const ethSent = ethers.utils.parseUnits(String(ethAmount),"ether");
 	console.log("Eth sent : " + ethSent)
-	const tx = await DEX.addLiquidity(toDecimals(zroAmount), { value: ethSent })
+	const tx = await DEX.addLiquidity(parsedZroAmount, { value: ethSent })
 	await tx.wait(1)
 	toast.success("Liquidity Added");
 	console.log(tx)
